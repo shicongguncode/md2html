@@ -1,0 +1,6 @@
+name: mermaid
+version: 11.12.0
+source: https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js
+license: MIT
+sha256: 07e37dfa97b337ccc85365d57eddf99b9706f09db3b59b260d0333b23b343c4b
+note: 准备阶段联网下载一次并随仓库固定；日常转换只读本地文件，升级需手动替换 mermaid.min.js 并更新本文件。

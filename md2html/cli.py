@@ -29,6 +29,11 @@ def main(argv: list[str] | None = None) -> int:
         prog="md2html", description="把 Markdown 文件转换成单文件 HTML"
     )
     parser.add_argument("source", help="要转换的 Markdown 文件")
+    parser.add_argument(
+        "--no-mermaid",
+        action="store_true",
+        help="把 Mermaid 代码块按普通代码块显示，不内联图库",
+    )
     args = parser.parse_args(argv)
 
     source = Path(args.source)
@@ -39,7 +44,11 @@ def main(argv: list[str] | None = None) -> int:
 
     output = source.with_suffix(".html")
     try:
-        page = convert(_read_markdown(source), source_name=source.name)
+        page = convert(
+            _read_markdown(source),
+            source_name=source.name,
+            mermaid=not args.no_mermaid,
+        )
         output.write_text(page, encoding="utf-8")
     except (ConversionError, OSError) as exc:
         return _fail(str(exc))
