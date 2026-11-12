@@ -4,6 +4,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from html import unescape
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -332,6 +333,98 @@ class TocToggleTest(unittest.TestCase):
             self.assertIn("正文。", html)
             self.assertIn('<h2 id="sec-1">章节</h2>', html)
             self.assertIn('<h3 id="item-1">小节</h3>', html)
+
+
+class CodeHighlightTest(unittest.TestCase):
+    def test_fenced_blocks_with_known_languages_are_highlighted(self):
+        samples = [
+            ("python", "def f(x):\n    return x + 1\n", '<span class="k">def</span>'),
+            ("javascript", "const n = 1;\n", '<span class="kd">const</span>'),
+            ("bash", 'echo "hi"\n', '<span class="s2">"hi"</span>'),
+            ("html", '<p class="x">hi</p>\n', '<span class="nt">p</span>'),
+            ("css", "a { color: red; }\n", '<span class="k">color</span>'),
+            ("json", '{"a": 1}\n', '<span class="nt">"a"</span>'),
+        ]
+        markdown = "\n".join(
+            f"```{language}\n{code}```" for language, code, _ in samples
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "highlight.md"
+            source.write_text(markdown, encoding="utf-8")
+
+            result = run_cli(source)
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            html = (Path(tmp) / "highlight.html").read_text(encoding="utf-8")
+            self.assertIn('<pre class="highlight">', html)
+            text = unescape(re.sub(r"<[^>]+>", "", html))
+            for language, code, marker in samples:
+                self.assertIn(f'<code class="language-{language}">', html)
+                self.assertIn(marker, html)
+                self.assertIn(code.strip(), text)
+
+    def test_highlight_styles_are_inlined_for_light_and_dark_without_external_resources(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "style.md"
+            source.write_text("```python\nx = 1\n```\n", encoding="utf-8")
+
+            result = run_cli(source)
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            html = (Path(tmp) / "style.html").read_text(encoding="utf-8")
+            self.assertIn("pre.highlight .k", html)
+            self.assertIn("var(--hl-key)", html)
+            self.assertRegex(html, r":root\s*\{[^}]*--hl-key:")
+            self.assertRegex(
+                html, r"@media \(prefers-color-scheme: dark\)[\s\S]*?--hl-key:"
+            )
+            self.assertRegex(html, r':root\[data-theme="dark"\][\s\S]*?--hl-key:')
+            self.assertNotIn("<link ", html)
+            self.assertNotIn("@import", html)
+            self.assertNotIn("<script src=", html)
+
+    def test_unknown_language_fence_falls_back_to_plain_text(self):
+        markdown = "```foobar\nx < 3 && y > 1\n```\n"
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "unknown.md"
+            source.write_text(markdown, encoding="utf-8")
+
+            result = run_cli(source)
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            html = (Path(tmp) / "unknown.html").read_text(encoding="utf-8")
+            self.assertIn('<pre><code class="language-foobar">', html)
+            self.assertIn("x &lt; 3 &amp;&amp; y &gt; 1", html)
+            self.assertNotIn('<pre class="highlight">', html)
+            self.assertNotIn('<span class="', html)
+
+    def test_unlabeled_fence_falls_back_to_plain_text(self):
+        markdown = "```\n没有语言标记\n```\n"
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "plain.md"
+            source.write_text(markdown, encoding="utf-8")
+
+            result = run_cli(source)
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            html = (Path(tmp) / "plain.html").read_text(encoding="utf-8")
+            self.assertIn("<pre><code>没有语言标记\n</code></pre>", html)
+            self.assertNotIn('<pre class="highlight">', html)
+
+    def test_inline_code_is_not_highlighted(self):
+        markdown = '行内 `def f(x)` 与 `{"a": 1}` 保持原样。\n'
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "inline.md"
+            source.write_text(markdown, encoding="utf-8")
+
+            result = run_cli(source)
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            html = (Path(tmp) / "inline.html").read_text(encoding="utf-8")
+            self.assertIn("<code>def f(x)</code>", html)
+            self.assertIn("<code>{&quot;a&quot;: 1}</code>", html)
+            self.assertNotIn('<pre class="highlight">', html)
+            self.assertNotIn('<span class="k">', html)
 
 
 if __name__ == "__main__":
