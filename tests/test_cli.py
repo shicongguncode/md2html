@@ -169,6 +169,60 @@ class SingleFilePageTest(unittest.TestCase):
             self.assertRegex(html, r"max-width:\s*640px")
 
 
+class MermaidTest(unittest.TestCase):
+    DIAGRAM = "```mermaid\nflowchart LR\n  A[开始] --> B{判断}\n  B -->|是| C[结束]\n```\n"
+
+    def test_diagram_becomes_container_with_inlined_library(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "flow.md"
+            source.write_text("# 流程\n\n" + self.DIAGRAM, encoding="utf-8")
+
+            result = run_cli(source)
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            html = (Path(tmp) / "flow.html").read_text(encoding="utf-8")
+            self.assertIn('<div class="mermaid">', html)
+            self.assertIn("A[开始]", html)
+            self.assertNotIn('class="language-mermaid"', html)
+            self.assertIn("<!-- mermaid ", html)
+            self.assertIn("mermaid.initialize", html)
+            self.assertGreater(len(html), 1_000_000)
+            self.assertNotIn("<script src=", html)
+            self.assertNotIn("<link ", html)
+
+    def test_document_without_diagram_has_no_container_or_library(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with_diagram = Path(tmp) / "with.md"
+            with_diagram.write_text("# 有图\n\n" + self.DIAGRAM, encoding="utf-8")
+            without_diagram = Path(tmp) / "without.md"
+            without_diagram.write_text("# 无图\n\n普通段落。\n", encoding="utf-8")
+
+            self.assertEqual(run_cli(with_diagram).returncode, 0)
+            self.assertEqual(run_cli(without_diagram).returncode, 0)
+
+            plain = (Path(tmp) / "without.html").read_text(encoding="utf-8")
+            diagram = (Path(tmp) / "with.html").read_text(encoding="utf-8")
+            self.assertNotIn("mermaid", plain)
+            self.assertLess(len(plain), 100_000)
+            self.assertGreater(len(diagram) - len(plain), 1_000_000)
+
+    def test_no_mermaid_flag_shows_plain_code_block_without_library(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "flow.md"
+            source.write_text("# 流程\n\n" + self.DIAGRAM, encoding="utf-8")
+
+            result = run_cli(source, "--no-mermaid")
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            html = (Path(tmp) / "flow.html").read_text(encoding="utf-8")
+            self.assertIn('<pre><code class="language-mermaid">', html)
+            self.assertIn("A[开始]", html)
+            self.assertNotIn('<div class="mermaid">', html)
+            self.assertNotIn("<!-- mermaid ", html)
+            self.assertNotIn("mermaid.initialize", html)
+            self.assertLess(len(html), 100_000)
+
+
 class FileHandlingTest(unittest.TestCase):
     def test_overwrites_existing_html_and_handles_spaces_and_chinese_names(self):
         with tempfile.TemporaryDirectory() as tmp:

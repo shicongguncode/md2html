@@ -32,6 +32,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--no-toc", action="store_true", help="不生成左侧目录，正文改为居中单栏"
     )
+    parser.add_argument(
+        "--no-mermaid",
+        action="store_true",
+        help="把 Mermaid 代码块按普通代码块显示，不内联图库",
+    )
     args = parser.parse_args(argv)
 
     source = Path(args.source)
@@ -43,7 +48,10 @@ def main(argv: list[str] | None = None) -> int:
     output = source.with_suffix(".html")
     try:
         page = convert(
-            _read_markdown(source), source_name=source.name, toc=not args.no_toc
+            _read_markdown(source),
+            source_name=source.name,
+            toc=not args.no_toc,
+            mermaid=not args.no_mermaid,
         )
         output.write_text(page, encoding="utf-8")
     except (ConversionError, OSError) as exc:
