@@ -402,9 +402,15 @@ footer {
 }
 
 @media (max-width: 1080px) {
-  .toc { display: none; }
-  .shell { padding: 28px 16px 60px; }
+  .shell { gap: 24px; padding: 28px 16px 60px; }
+  .toc { flex: 0 0 200px; }
   main { max-width: 100%; padding: 36px 30px 48px; }
+}
+
+@media (max-width: 760px) {
+  .toc { display: none; }
+  .shell { display: block; }
+  main { margin: 0 auto; }
 }
 
 @media (max-width: 640px) {
