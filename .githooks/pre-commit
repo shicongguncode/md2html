@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+cd "$(git rev-parse --show-toplevel)"
+python -m unittest discover -s tests
+python -m compileall -q md2html

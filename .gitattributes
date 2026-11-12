@@ -1,1 +1,4 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+.githooks/* text eol=lf
 md2html/vendor/mermaid.min.js -text

@@ -1,3 +1,7 @@
+## 项目速览
+
+单文件 Markdown→HTML 转换器：`python -m md2html <file.md>`。依赖用 `pip install -r requirements.txt` 安装，提交前运行 `scripts/check.bat`（测试 + 编译检查）。视觉基准在 `docs/reference/agent-skills-sample.html`。
+
 ## Agent skills
 
 ### Issue tracker

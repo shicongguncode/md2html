@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>15 个能和 mattpocock/skills 互补的 Agent Skills（Kimi Code 版）</title>
+<style>
+:root {
+  --bg: #f1eee8;
+  --paper: #fffdf9;
+  --ink: #24211d;
+  --muted: #736d64;
+  --accent: #b45309;
+  --accent-soft: #fbf0e2;
+  --line: #e7e0d5;
+  --code-bg: #f4efe6;
+  --th-bg: #f1eadf;
+  --shadow: 0 1px 2px rgba(40,30,20,.04), 0 18px 50px rgba(40,30,20,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141312;
+    --paper: #1c1a18;
+    --ink: #e9e4da;
+    --muted: #a69e91;
+    --accent: #f0a35e;
+    --accent-soft: #2a2118;
+    --line: #332e28;
+    --code-bg: #26221d;
+    --th-bg: #2a251f;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 18px 50px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141312;
+  --paper: #1c1a18;
+  --ink: #e9e4da;
+  --muted: #a69e91;
+  --accent: #f0a35e;
+  --accent-soft: #2a2118;
+  --line: #332e28;
+  --code-bg: #26221d;
+  --th-bg: #2a251f;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 18px 50px rgba(0,0,0,.35);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.shell {
+  display: flex;
+  gap: 44px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 44px 22px 90px;
+  align-items: flex-start;
+}
+
+.toc {
+  position: sticky;
+  top: 32px;
+  flex: 0 0 232px;
+  max-height: calc(100vh - 64px);
+  overflow: auto;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 18px 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.toc-title {
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.toc ul { list-style: none; margin: 0; padding: 0; }
+.toc > ul > li { margin: 9px 0; }
+.toc > ul > li > a { font-weight: 600; }
+.toc ul ul { margin: 4px 0 8px 10px; padding-left: 8px; border-left: 1px solid var(--line); }
+.toc ul ul li { margin: 3px 0; }
+.toc a {
+  display: block;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 2px 6px;
+  border-radius: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.toc a:hover { color: var(--accent); background: var(--accent-soft); }
+.toc a.active { color: var(--accent); background: var(--accent-soft); }
+
+main {
+  flex: 1;
+  min-width: 0;
+  max-width: 880px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 52px 58px 64px;
+}
+
+.page-kicker {
+  font-size: 12px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+h1 {
+  font-size: 31px;
+  line-height: 1.4;
+  letter-spacing: -.01em;
+  margin: 0 0 14px;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 23px;
+  line-height: 1.5;
+  margin: 58px 0 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 650;
+}
+h2::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 18px;
+  border-radius: 3px;
+  background: var(--accent);
+  margin-right: 10px;
+  vertical-align: -2px;
+}
+
+h3 {
+  font-size: 18.5px;
+  line-height: 1.55;
+  margin: 44px 0 12px;
+  padding-left: 13px;
+  border-left: 3px solid var(--accent);
+  font-weight: 650;
+}
+
+p { margin: 14px 0; }
+strong { font-weight: 650; }
+
+blockquote {
+  margin: 22px 0;
+  padding: 14px 18px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+blockquote p { margin: 0; }
+
+code {
+  font-family: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: .875em;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+pre {
+  margin: 18px 0;
+  padding: 16px 18px;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 13px;
+  white-space: pre;
+}
+
+.table-wrap {
+  margin: 20px 0;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+th, td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+th {
+  background: var(--th-bg);
+  font-weight: 650;
+  white-space: nowrap;
+}
+tbody tr:nth-child(even) { background: color-mix(in srgb, var(--code-bg) 45%, transparent); }
+tbody tr:last-child td { border-bottom: 0; }
+
+ul, ol { margin: 14px 0; padding-left: 24px; }
+li { margin: 6px 0; }
+li > ul, li > ol { margin: 6px 0 2px; }
+li::marker { color: var(--accent); }
+
+hr {
+  border: 0;
+  border-top: 1px dashed var(--line);
+  margin: 40px 0;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+p.meta {
+  margin: 6px 0 10px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+p.meta code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--accent);
+  font-size: 13.5px;
+}
+
+h2, h3 { scroll-margin-top: 28px; }
+
+.theme-btn {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 10;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 17px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.theme-btn:hover { color: var(--accent); }
+
+footer {
+  margin-top: 56px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+@media (max-width: 1080px) {
+  .toc { display: none; }
+  .shell { padding: 28px 16px 60px; }
+  main { max-width: 100%; padding: 36px 30px 48px; }
+}
+
+@media (max-width: 640px) {
+  body { font-size: 15.5px; line-height: 1.8; }
+  main { padding: 26px 20px 40px; border-radius: 14px; }
+  h1 { font-size: 25px; }
+  h2 { font-size: 20px; margin-top: 44px; }
+  h3 { font-size: 17px; margin-top: 34px; }
+  th, td { padding: 8px 10px; }
+  .theme-btn { top: 12px; right: 12px; }
+}
+
+@media print {
+  body { background: #fff; }
+  .toc, .theme-btn { display: none; }
+  main { border: 0; box-shadow: none; padding: 0; max-width: 100%; }
+  pre, .table-wrap { break-inside: avoid; }
+  h2, h3 { break-after: avoid; }
+}
+</style>
+</head>
+<body>
+<button class="theme-btn" id="themeBtn" aria-label="切换深浅色">◐</button>
+<div class="shell">
+<nav class="toc" aria-label="目录"><div class="toc-title">目录</div><ul class="toc-root"><li><a href="#sec-1">先看这一节：Kimi Code 怎么认 skill</a></li><li><a href="#sec-2">一、文档与数据表达</a><ul><li><a href="#item-1">1. anthropics/skills</a></li><li><a href="#item-2">2. tt-a1i/archify</a></li><li><a href="#item-3">3. blader/humanizer</a></li><li><a href="#item-4">4. 【破格】alchaincyf/huashu-excel</a></li></ul></li><li><a href="#sec-3">二、调研与知识管理</a><ul><li><a href="#item-5">5. Graphify-Labs/graphify</a></li><li><a href="#item-6">6. mvanhorn/last30days-skill</a></li></ul></li><li><a href="#sec-4">三、通用（不绑项目）</a><ul><li><a href="#item-7">7. Leonxlnx/taste-skill</a></li><li><a href="#item-8">8. virgiliojr94/book-to-skill</a></li><li><a href="#item-9">9. obsidianmd/obsidian-skills</a></li><li><a href="#item-10">10. 【破格】Astro-Han/karpathy-llm-wiki</a></li><li><a href="#item-11">11. ayghri/i-have-adhd</a></li><li><a href="#item-12">12. multica-ai/andrej-karpathy-skills</a></li><li><a href="#item-13">13. JuliusBrussee/caveman</a></li><li><a href="#item-14">14. coreyhaines31/marketingskills</a></li><li><a href="#item-15">15. 【破格】Paramchoudhary/ResumeSkills</a></li></ul></li><li><a href="#sec-5">四、已排除：这些和 mattpocock 功能重叠</a></li><li><a href="#sec-6">五、如果只装三个</a></li><li><a href="#sec-7">六、核对方法与免责声明</a></li></ul></nav>
+<main>
+<header>
+  <div class="page-kicker">Agent Skills · Kimi Code</div>
+  <h1>15 个能和 mattpocock/skills 互补的 Agent Skills（Kimi Code 版）</h1>
+</header>
+<blockquote><p>核对日期：2026-11-12。星标和最近提交时间取自 GitHub 仓库页；只核对了 README 与目录结构，<strong>没有实际安装运行</strong>。星标每天在变，装之前建议再看一眼。</p></blockquote>
+<p>mattpocock/skills 已经把「写代码」这条线占满了：grill 对齐、to-spec 写规格、to-tickets 拆票、tdd、diagnosing-bugs、code-review、pr、domain-modeling、research、teach、writing-for-agents。所以下面这份清单<strong>刻意不碰这些能力</strong>，只补它没管的：把东西做出来、把资料变成结构、以及日常使用时的输出形态和审美。</p>
+<hr>
+<h2 id="sec-1">先看这一节：Kimi Code 怎么认 skill</h2>
+<p>这是后面所有「怎么装」的依据，来自 Kimi Code 官方文档：</p>
+<ul><li><strong>用户级目录</strong>（所有项目可用）：<ul><li><code>D:/AppData/kimi-code/skills/</code> —— 也就是你的 <code>$KIMI_CODE_HOME/skills/</code>，现在 grill-me、tdd 这些就装在这</li><li><code>C:/Users/fjhb/.agents/skills/</code> —— 通用目录，现在的 web-access 在这里</li></ul></li><li><strong>项目级目录</strong>（只对当前项目生效）：<ul><li>项目根 <code>.kimi-code/skills/</code></li><li>项目根 <code>.agents/skills/</code></li></ul></li><li><strong>额外目录</strong>：<code>config.toml</code> 顶层的 <code>extra_skill_dirs</code>，可以挂一个团队共享目录</li><li><strong>每个 skill 一个文件夹，里面必须有 <code>SKILL.md</code></strong>，frontmatter 里 <code>name</code> 和 <code>description</code> 两个字段<strong>都必须有</strong>，缺一个就直接解析失败、不出现在列表里</li><li><strong>调用方式是 <code>/skill:&lt;name&gt;</code></strong>，不是 Claude Code 的 <code>/&lt;name&gt;</code></li><li>技能目录有变动会<strong>自动重新加载</strong>，不用重启客户端；新开会话最稳</li><li>Claude 的插件市场格式（<code>.claude-plugin/plugin.json</code>）Kimi Code 不能直接装，要手动把里面的 <code>skills/</code> 子目录复制出来</li><li><code>npx skills add &lt;仓库&gt; --agent kimi-code-cli</code> 是官方支持的安装方式，默认装到项目 <code>.agents/skills/</code>，加 <code>--global</code> 装到 <code>~/.agents/skills/</code></li></ul>
+<p>判断一个仓库能不能用，看四条就够了：</p>
+<ol><li>有没有 <code>SKILL.md</code>，frontmatter 有没有 <code>name</code> + <code>description</code></li><li>有没有写死 <code>~/.claude/...</code> 的路径或 Claude 专有工具名</li><li>脚本依赖的运行时你机器上有没有（Python、Node、ffmpeg、LibreOffice）</li><li>是不是只有 Claude 插件壳、没有裸 <code>skills/</code> 目录</li></ol>
+<hr>
+<h2 id="sec-2">一、文档与数据表达</h2>
+<h3 id="item-1">1. anthropics/skills —— 官方文档四件套</h3>
+<p class="meta"><code>193,215 ★</code> · 最近提交 <code>2026-11-06</code> · Apache-2.0</p>
+<p><strong>大白话</strong>：这是 Anthropic 把「Claude 帮你做 Word / PPT / Excel / PDF」背后那套本事开源了。给它一份 docx，它能改格式、插图表、套模板、处理修订和批注；给它一堆数据，它能生成带公式和样式的 xlsx；还能做 PDF 拆分合并、表单填写、扫描件 OCR。相当于给 agent 配了一个会用 Office 的实习生。</p>
+<p><strong>补了什么空白</strong>：mattpocock 教的是「怎么想、怎么写规格、怎么审代码」，它不会真的产出一个 <code>.docx</code> 或 <code>.pptx</code> 文件。这套补的是最后一公里：把内容变成能发出去的文件。</p>
+<p><strong>装进 Kimi Code</strong>：</p>
+<pre><code class="language-bash">git clone --depth 1 https://github.com/anthropics/skills.git /tmp/anthropics-skills
+cp -r /tmp/anthropics-skills/skills/docx \
+      /tmp/anthropics-skills/skills/pdf \
+      /tmp/anthropics-skills/skills/pptx \
+      /tmp/anthropics-skills/skills/xlsx \
+      "D:/AppData/kimi-code/skills/"</code></pre>
+<p>四个目录各自带 <code>SKILL.md</code> 和 <code>scripts/</code>，复制过去就能被识别。装完用 <code>/skill:docx</code>、<code>/skill:xlsx</code> 试。同仓库还有 <code>canvas-design</code>、<code>brand-guidelines</code>、<code>theme-factory</code>，需要做视觉物料时可以一起拿。</p>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>这些技能是照着 Claude 的沙箱写的，默认 <code>docx</code>、<code>pptxgenjs</code>、<code>openpyxl</code>、<code>pandas</code> 这些包<strong>已经预装</strong>。你的机器上大概率没有，第一次跑会报 <code>require</code> 或 <code>import</code> 失败，按提示 <code>npm install</code> / <code>pip install</code> 即可。</li><li>PDF 转换和 Excel 公式重算依赖 <strong>LibreOffice</strong>（<code>soffice</code>）。你机器上有 Office 和 WPS，但没有 LibreOffice；不装的话「转 PDF 看排版」「重算公式」这两类会退化，纯读写文件不受影响。</li><li><code>docx</code> 技能还会用到 <code>pandoc</code> 和 <code>pdftoppm</code>，属于可选增强，缺了会跳过部分步骤。</li><li>技能里写的是 <code>python scripts/office/soffice.py</code>，路径相对于 skill 自己目录，复制时<strong>整个文件夹一起搬</strong>，不要只拿 <code>SKILL.md</code>。</li></ul>
+<p><strong>替代方案</strong>：<code>huashu-excel</code>（更懂中文表格业务），<code>archify</code>（图表）。</p>
+<hr>
+<h3 id="item-2">2. tt-a1i/archify —— 把任何东西画成能点的图</h3>
+<p class="meta"><code>95,681 ★</code> · 最近提交 <code>2026-11-12</code> · Apache-2.0</p>
+<p><strong>大白话</strong>：你跟它说「把这条链路画出来」或者「把这个方案讲清楚」，它生成的是一个<strong>能点、能展开、能切换明暗主题</strong>的单页 HTML，不是一张死图。支持架构图、时序图、流程图、数据流、状态机、ER 图、时间线等十来种。</p>
+<p><strong>补了什么空白</strong>：mattpocock 的 <code>prototype</code> 是「做个粗糙原型验证想法」，archify 是「把已经想清楚的东西讲给别人听」。一个对内，一个对外。</p>
+<p><strong>装进 Kimi Code</strong>：</p>
+<pre><code class="language-bash">npx -y skills@latest add https://archify.si --skill archify \
+  --agent kimi-code-cli --global --copy --yes</code></pre>
+<p>不想用 npx 就手动复制：把仓库里的 <code>archify/</code> 整个目录复制成 <code>D:/AppData/kimi-code/skills/archify/</code>，里面自带 <code>SKILL.md</code>、<code>bin/</code>、<code>renderers/</code>、<code>schemas/</code>。</p>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>需要 <strong>Node 18+</strong>（你机器有 Node），渲染脚本用 ESM。</li><li>产物是 HTML，不是 PPT；要放进汇报材料还得自己截图或另转。</li><li>图复杂到一定程度，它仍会问你补信息；别指望一句话出终稿。</li><li>官方安装器支持 claude-code、codex、cursor、opencode、github-copilot 这些 agent 名，<code>kimi-code-cli</code> 是 skills CLI 的标准 agent id，能装上；但 archify 自己的文档没点名 Kimi，装完建议先跑一次 <code>/skill:archify</code> 验证。</li></ul>
+<p><strong>替代方案</strong>：<code>anthropics/skills</code> 里的 <code>canvas-design</code>（偏视觉海报），<code>taste-skill</code>（偏网页审美）。</p>
+<hr>
+<h3 id="item-3">3. blader/humanizer —— 把 AI 味改回人话</h3>
+<p class="meta"><code>68,046 ★</code> · 最近提交 <code>2026-11-10</code> · MIT</p>
+<p><strong>大白话</strong>：它专门删那些一眼就能看出是 AI 写的腔调：「不是 X，而是 Y」「让我们深入探讨」「这不仅是一次升级，更是一次重新定义」「说到底，真正重要的是……」——事实一个不改，只把话说得像人说的。判断标准来自维基百科编辑们总结的「AI 写作特征」。</p>
+<p><strong>补了什么空白</strong>：mattpocock 的 <code>writing-for-agents</code> 是「怎么写给 agent 看的文档」，管的是结构清晰、少歧义；humanizer 管的是「写给人看时别像机器人」。两件事。</p>
+<p><strong>装进 Kimi Code</strong>：这个最简单，单文件、零依赖。</p>
+<pre><code class="language-bash">mkdir -p "D:/AppData/kimi-code/skills/humanizer"
+curl -fsSL https://raw.githubusercontent.com/blader/humanizer/main/SKILL.md \
+  -o "D:/AppData/kimi-code/skills/humanizer/SKILL.md"</code></pre>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>语料偏英文，26 条特征是从英文写作里总结的。中文能不能有同样效果，得自己试；中文场景可以再叠一个 <code>shuorenhua</code>（2.6k 星，中文优先的去 AI 味）。</li><li>它明确说了<strong>不负责绕过 AI 检测器</strong>，改完仍可能被判定为 AI 生成。要的是可读性，不是欺骗检测。</li><li>会改语气，不会替你补事实；原文空洞，改完还是空洞。</li></ul>
+<p><strong>替代方案</strong>：<code>MrGeDiao/shuorenhua</code>（2.6k，中文）、<code>conorbronsdon/avoid-ai-writing</code>（5.6k，审计式改写）。</p>
+<hr>
+<h3 id="item-4">4. 【破格】alchaincyf/huashu-excel —— 中文表格分析全流程</h3>
+<p class="meta"><code>462 ★</code> · 最近提交 <code>2026-11-04</code> · MIT</p>
+<p><strong>大白话</strong>：一个中文的「数据分析师傅」：先体检脏表（重复行、空值、口径不一致、单位混用），再清洗、定口径、算指标、对账，最后出报告。它反复强调一件事：<strong>让算出来的数字经得起追问</strong>。不是教你怎么点 Excel，是教你怎么判断一个数靠不靠谱。</p>
+<p><strong>补了什么空白</strong>：官方 <code>xlsx</code> 技能管的是「怎么读写文件、怎么写公式、怎么保格式」，不管「这个数对不对、口径有没有问题」。你手上那些系统导出表、对账表，缺的正好是后者。</p>
+<p><strong>装进 Kimi Code</strong>：整个仓库复制成一个 skill 目录。</p>
+<pre><code class="language-bash">git clone --depth 1 https://github.com/alchaincyf/huashu-excel.git /tmp/huashu-excel
+cp -r /tmp/huashu-excel "D:/AppData/kimi-code/skills/huashu-excel"</code></pre>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>星标只有 462，远低于 5k 门槛，作者个人维护，没有评测集。<strong>这是破格收录，按需自取</strong>。</li><li>依赖只有 <code>openpyxl</code>，很轻。</li><li>话术和案例偏中文业务场景（电商、运营、财务对账），做技术数据时部分章节用不上。</li><li>和官方 <code>xlsx</code> 技能同时装不冲突，但两个都会被模型自动选中，建议在 <code>description</code> 里分清使用场景，或者只留一个。</li></ul>
+<p><strong>替代方案</strong>：<code>anthropics/skills</code> 的 <code>xlsx</code>（更通用、更稳）。</p>
+<hr>
+<h2 id="sec-3">二、调研与知识管理</h2>
+<h3 id="item-5">5. Graphify-Labs/graphify —— 把一文件夹资料变成知识地图</h3>
+<p class="meta"><code>146,215 ★</code> · 最近提交 <code>2026-11-11</code> · 未标注 License（用前确认）</p>
+<p><strong>大白话</strong>：把一个文件夹丢进去——代码、PDF、Markdown、截图、白板照片都行——它读完给你画一张关系图：哪些概念连着哪些、哪些是枢纽、哪些连接出乎意料。产物包括一个能点能搜的 <code>graph.html</code>、一个能直接当 Obsidian 库打开的目录、一份 <code>GRAPH_REPORT.md</code>，以及一个 <code>graph.json</code>。以后问问题不用重读原件，查图就行。</p>
+<p><strong>补了什么空白</strong>：mattpocock 的 <code>research</code> 是「去外面查资料，写成一篇带引用的 md」；graphify 是「把你<strong>已经有</strong>的资料变成可查询的结构」。一个向外，一个向内。</p>
+<p><strong>装进 Kimi Code</strong>：</p>
+<pre><code class="language-bash">pip install graphifyy
+# 手动装 skill：注意仓库里文件名是小写 skill.md
+mkdir -p "D:/AppData/kimi-code/skills/graphify"
+curl -fsSL https://raw.githubusercontent.com/Graphify-Labs/graphify/main/skills/graphify/skill.md \
+  -o "D:/AppData/kimi-code/skills/graphify/SKILL.md"</code></pre>
+<p><code>graphify install</code> 默认往 <code>~/.claude/skills</code> 写，Kimi 用户建议手动复制，避免装错地方。</p>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>PyPI 包名暂时是 <code>graphifyy</code>（<code>graphify</code> 这个名字还在收回），CLI 命令仍叫 <code>graphify</code>。</li><li>需要 <strong>Python 3.10+</strong>；Windows 上如果 <code>graphify</code> 命令找不到，把 <code>%APPDATA%/Python/Python3xx/Scripts</code> 加进 PATH，或者用 <code>pipx install graphifyy</code>。</li><li>抽取概念要调 LLM（含视觉），大文件夹第一次跑会<strong>又慢又费 token</strong>；它有 SHA256 缓存，第二次只处理变动的文件。</li><li>生成的图质量取决于资料质量，垃圾进垃圾出。</li></ul>
+<p><strong>替代方案</strong>：<code>karpathy-llm-wiki</code>（更轻，纯 Markdown，不建图）。</p>
+<hr>
+<h3 id="item-6">6. mvanhorn/last30days-skill —— 最近 30 天，真实的人在说什么</h3>
+<p class="meta"><code>67,353 ★</code> · 最近提交 <code>2026-11-12</code> · MIT</p>
+<p><strong>大白话</strong>：想知道「最近大家到底怎么评价这个话题」，它同时去 Reddit、X、YouTube、TikTok、Hacker News、Polymarket、GitHub 捞帖子，按点赞、转发、投注金额这些<strong>真实互动</strong>排序，再让 agent 综合成一份带链接的简报。它不搜「编辑认为重要的」，搜「人用注意力投票投出来的」。</p>
+<p><strong>补了什么空白</strong>：mattpocock 的 <code>research</code> 找的是高可信一手资料（官方文档、论文、源码），适合「查事实」；last30days 找的是舆情和体感，适合「看风向」。两者互补，不是替代。</p>
+<p><strong>装进 Kimi Code</strong>：</p>
+<pre><code class="language-bash">git clone --depth 1 https://github.com/mvanhorn/last30days-skill.git /tmp/last30days
+cp -r /tmp/last30days/skills/last30days "D:/AppData/kimi-code/skills/last30days"</code></pre>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>需要 <strong>Python 3.12+、Node、yt-dlp</strong>；YouTube 搜索和字幕靠本机 <code>yt-dlp</code>，不用 key。</li><li>Reddit、HN、Polymarket、GitHub <strong>零配置</strong>可用；X、YouTube 补量、TikTok、Instagram 要走 ScrapeCreators，免费额度 1 万次，之后按量付费。</li><li><strong>中文平台覆盖弱</strong>：小红书、微博、B 站都没有，做中文舆情会明显偏科。</li><li>输出有强制格式（第一行必须是 <code>🌐 last30days · ...</code> 的 badge），不喜欢要自己改 SKILL.md。</li><li>它靠 <code>CLAUDECODE</code> / <code>CURSOR_AGENT</code> 环境变量判断渲染方式，Kimi 下两者都没设，会走「显示完整 URL」的默认分支，正好适合你。</li></ul>
+<p><strong>替代方案</strong>：mattpocock 的 <code>research</code>（免费、慢、更可信）；<code>Graphify</code>（分析已有资料）。</p>
+<hr>
+<h2 id="sec-4">三、通用（不绑项目）</h2>
+<h3 id="item-7">7. Leonxlnx/taste-skill —— 给 agent 装一点审美</h3>
+<p class="meta"><code>113,663 ★</code> · 最近提交 <code>2026-11-08</code> · MIT</p>
+<p><strong>大白话</strong>：做落地页、官网、产品页时，它会管配色、字号层级、留白、真实照片、动效节奏，还会用真浏览器截图自检，专门防那种「一眼 AI 生成」的塑料感。它内置一整套设计系统，不是给你十个方案让你选。</p>
+<p><strong>补了什么空白</strong>：mattpocock 的 <code>prototype</code> 只关心「这个交互能不能验证想法」，不管好不好看。taste 管的是「拿出去能不能见人」。</p>
+<p><strong>装进 Kimi Code</strong>：</p>
+<pre><code class="language-bash">npx skills add https://github.com/Leonxlnx/taste-skill \
+  --skill "design-taste-frontend" --agent kimi-code-cli --global</code></pre>
+<p>手动装：复制 <code>skills/taste-skill/</code> 整个目录到 <code>D:/AppData/kimi-code/skills/</code>。</p>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>需要 <strong>Node 22+</strong> 和 <strong>Chrome / Edge / Chromium</strong>（你机器有 Chrome）；它会调浏览器截图做视觉检查。</li><li>技能内部注册名是 <code>design-taste-frontend</code>，不是文件夹名 <code>taste-skill</code>，调用时用 <code>/skill:design-taste-frontend</code>。</li><li>偏营销站、公司站、产品页；做后台管理系统、数据大屏未必合适。</li><li>会强推一套设计系统，和你现有品牌规范冲突时要手动压。</li></ul>
+<p><strong>替代方案</strong>：<code>Nutlope/hallmark</code>（53.5k，反 AI 味设计），<code>anthropics/skills</code> 的 <code>canvas-design</code>。</p>
+<hr>
+<h3 id="item-8">8. virgiliojr94/book-to-skill —— 把一本书变成随取随用的手册</h3>
+<p class="meta"><code>37,626 ★</code> · 最近提交 <code>2026-11-08</code> · MIT</p>
+<p><strong>大白话</strong>：丢一本技术书（PDF、EPUB、DOCX、HTML、Markdown 都行），它把书里的框架、心智模型、原则、技巧、反模式抽出来，做成一个 skill。以后干活时 agent 能直接引用这本书的方法，而不是每次重新翻 PDF。</p>
+<p><strong>补了什么空白</strong>：mattpocock 的 <code>teach</code> 是「分多轮教你一个概念」，book-to-skill 是「把一本书固化成可调用的知识」。一个过程，一个产物。</p>
+<p><strong>装进 Kimi Code</strong>：复制整个仓库根目录（<code>SKILL.md</code>、<code>book_to_skill/</code>、<code>scripts/</code>、<code>references/</code> 要一起）。</p>
+<pre><code class="language-bash">git clone --depth 1 https://github.com/virgiliojr94/book-to-skill.git /tmp/book-to-skill
+cp -r /tmp/book-to-skill "D:/AppData/kimi-code/skills/book-to-skill"</code></pre>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>仓库带 <code>pyproject.toml</code>，解析 PDF/EPUB 需要 Python 依赖，第一次运行会提示装包；MOBI/AZW 还要 Calibre。</li><li>书越长越慢，一本 500 页的书可能要跑很久，token 消耗不小。</li><li>产出是「提炼版」，细节会丢；它适合当索引和提醒，不适合替代原书。</li><li>有中文 README，对中文书支持要看实际解析效果。</li></ul>
+<p><strong>替代方案</strong>：<code>karpathy-llm-wiki</code>（自己喂资料建 wiki），<code>obsidian-skills</code>（笔记库）。</p>
+<hr>
+<h3 id="item-9">9. obsidianmd/obsidian-skills —— Obsidian 官方出的 7 个技能</h3>
+<p class="meta"><code>51,723 ★</code> · 最近提交 <code>2026-11-11</code> · MIT</p>
+<p><strong>大白话</strong>：Obsidian 官方维护的一套技能，让 agent 会写 Obsidian 格式的笔记（双链、callout、frontmatter 属性）、会画 JSON Canvas 白板、会用 Obsidian CLI 管库；其中 <code>defuddle</code> 能把网页正文干净地抠成 Markdown，<code>knap</code> 能用 JSON/CSV 批量渲染模板。</p>
+<p><strong>补了什么空白</strong>：mattpocock 的文档是写给 agent 看的（规格、ADR、术语表）；这套是写给<strong>你自己的笔记库</strong>用的。方向相反。</p>
+<p><strong>装进 Kimi Code</strong>：复制 7 个技能目录。</p>
+<pre><code class="language-bash">git clone --depth 1 https://github.com/obsidianmd/obsidian-skills.git /tmp/obsidian-skills
+cp -r /tmp/obsidian-skills/plugins/obsidian/skills/* "D:/AppData/kimi-code/skills/"</code></pre>
+<p>七个技能：<code>obsidian-markdown</code>、<code>obsidian-bases</code>、<code>json-canvas</code>、<code>obsidian-cli</code>、<code>obsidian-headless</code>、<code>defuddle</code>、<code>knap</code>。</p>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>你机器上<strong>没装 Obsidian</strong>，所以 <code>obsidian-cli</code>、<code>obsidian-headless</code>、<code>obsidian-bases</code> 的核心价值用不上；能独立用的是 <code>defuddle</code>（网页转 Markdown）和 <code>knap</code>（模板批量生成）。</li><li>想发挥完整价值，得先装 Obsidian 桌面端并建一个 vault。</li><li>官方文档写的是 Claude Code / Codex / Cursor 的装法，Kimi 走手动复制最稳。</li></ul>
+<p><strong>替代方案</strong>：<code>karpathy-llm-wiki</code>（纯文件，不依赖客户端）。</p>
+<hr>
+<h3 id="item-10">10. 【破格】Astro-Han/karpathy-llm-wiki —— 让 agent 替你养一个 wiki</h3>
+<p class="meta"><code>2,728 ★</code> · 最近提交 <code>2026-07-23</code> · MIT</p>
+<p><strong>大白话</strong>：照 Karpathy 的思路，建两个目录：<code>raw/</code> 放原始资料（只读不改），<code>wiki/</code> 放 agent 编译出来的词条。你往里丢东西，agent 负责消化、改写、互链、补索引。时间越长，wiki 越厚，问问题时查 wiki 就行。</p>
+<p><strong>补了什么空白</strong>：mattpocock 的 <code>domain-modeling</code> 是给<strong>代码库</strong>建术语表和 ADR；这个是给<strong>你读过的所有东西</strong>建词条。一个服务项目，一个服务你自己。</p>
+<p><strong>装进 Kimi Code</strong>：复制整个仓库根目录（<code>SKILL.md</code>、<code>references/</code>、<code>scripts/</code>）。</p>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>星标 2.7k，低于门槛，<strong>破格收录</strong>；2026-07 之后没再更新。</li><li>没有自动化评测，效果取决于你喂什么、喂多少。</li><li>和 Graphify 的区别：这个产出是给人读的 Markdown wiki，Graphify 产出是给机器查的图 + 报告。两个都装不冲突，但会抢同一批资料。</li></ul>
+<p><strong>替代方案</strong>：<code>Graphify</code>（结构化查询），<code>obsidian-skills</code>（有客户端时更好用）。</p>
+<hr>
+<h3 id="item-11">11. ayghri/i-have-adhd —— 让回答「能直接执行」</h3>
+<p class="meta"><code>60,902 ★</code> · 最近提交 <code>2026-10-19</code> · MIT</p>
+<p><strong>大白话</strong>：它假定读你回答的人注意力有限，于是强制 agent：先给下一步动作、多步任务编号、每轮复述当前状态、砍掉跑题、给具体时间估计、把进展做得看得见。不是把回答变短，是把回答变得<strong>能动手</strong>。</p>
+<p><strong>补了什么空白</strong>：mattpocock 管的是「做什么、怎么做对」，完全没管「回答长什么样」。这条直接改变你每天看输出的体验，而且不绑项目。</p>
+<p><strong>装进 Kimi Code</strong>：这个仓库原生支持 Kimi——根目录有 <code>kimi.plugin.json</code>，里面写着 “ADHD-friendly output shaping for Kimi Code CLI”。</p>
+<pre><code class="language-bash">git clone --depth 1 https://github.com/ayghri/i-have-adhd.git /tmp/i-have-adhd
+cp -r /tmp/i-have-adhd/skills/i-have-adhd "D:/AppData/kimi-code/skills/"</code></pre>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>frontmatter 里 <code>disable-model-invocation: true</code>，模型不会自动启用，要你手动 <code>/skill:i-have-adhd</code>；开了之后会一直生效，直到你说 “stop adhd mode”。</li><li>有人会觉得每轮复述状态很啰嗦；它是刻意为之，不适合所有人。</li><li>纯提示词，零依赖，删掉就恢复原样。</li></ul>
+<p><strong>替代方案</strong>：同类很少；不喜欢就用一句话规则代替（「先给结论，再给步骤，每步不超过三行」）。</p>
+<hr>
+<h3 id="item-12">12. multica-ai/andrej-karpathy-skills —— 四条行为底线</h3>
+<p class="meta"><code>232,260 ★</code> · 最近提交 <code>2026-04-20</code> · MIT</p>
+<p><strong>大白话</strong>：不是 skill，是一份 <code>CLAUDE.md</code>。四条原则专治 agent 的常见毛病：不懂装懂、过度设计、乱改自己没看懂的代码、不汇报困惑。核心就一句：<strong>不确定就停下来问，别替你假设</strong>。</p>
+<p><strong>补了什么空白</strong>：mattpocock 是「流程」——先对齐、再写规格、再 TDD；这份是「行为底线」——不管做什么流程，都不许瞎猜、不许过度设计。</p>
+<p><strong>装进 Kimi Code</strong>：它不是 skill，要并进规则文件。</p>
+<ul><li>项目级：把内容合并进项目根的 <code>AGENTS.md</code></li><li>用户级：合并进 <code>D:/AppData/kimi-code/AGENTS.md</code>（你现在的全局规则就在这）</li></ul>
+<p><strong>别整份覆盖</strong>，只摘那四条原则，否则会和你现有的交付链接规则、内网浏览器规则打架。</p>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>2026-04 之后没更新，四条原则本身不会过时，但里面引用的 Claude Code 细节可能过时。</li><li>和 mattpocock 的 <code>grilling</code> 有部分重叠：都要求先澄清再动手。区别是 grilling 是一套访谈流程，这四条是常驻底线。</li><li>全文英文，合并时建议翻译成中文，省 token。</li></ul>
+<p><strong>替代方案</strong>：直接在 <code>AGENTS.md</code> 里写你自己踩过的坑，比通用原则更有效。</p>
+<hr>
+<h3 id="item-13">13. JuliusBrussee/caveman —— 让 agent 少说废话、少读无关内容</h3>
+<p class="meta"><code>119,159 ★</code> · 最近提交 <code>2026-11-10</code> · Apache-2.0</p>
+<p><strong>大白话</strong>：它让 agent 说话像穴居人：短句、少解释、不复述、不铺垫。官方数据是整场会话少 33% 输入 token、综合成本降 54%，还带一组 <code>caveman-commit</code>、<code>caveman-compress</code>、<code>cavecrew</code> 之类的配套技能。</p>
+<p><strong>补了什么空白</strong>：mattpocock 完全不管 token 成本。这条直接省钱，而且对所有任务生效。</p>
+<p><strong>装进 Kimi Code</strong>：</p>
+<pre><code class="language-bash"># 方式一：只拿技能文件（推荐先试这个）
+git clone --depth 1 https://github.com/JuliusBrussee/caveman.git /tmp/caveman
+cp -r /tmp/caveman/skills/* "D:/AppData/kimi-code/skills/"</code></pre>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>官方安装器（<code>install.sh</code> / <code>install.ps1</code>）会自动探测本机的 Claude Code、Cursor、Codex 等 agent，<strong>INSTALL.md 里没有点名 Kimi Code</strong>，所以一键安装大概率不会装到 Kimi 的目录；手动复制技能目录是更稳的路径。</li><li>核心收益来自它的 <strong>CLI / 代理层 / hook</strong>，不是纯提示词。只复制 skills 目录，能拿到「少废话」的一部分收益，拿不到「少读上下文」的那部分。</li><li>代理层会改模型路由和请求，接进 Kimi Code 属于未验证路径，<strong>建议先只装 skill，别装全局代理</strong>。</li><li>子技能很多（<code>caveman</code>、<code>caveman-commit</code>、<code>caveman-compress</code>、<code>cavecrew</code>、<code>lean-build</code>、<code>safe-refactor</code> 等），全装会让技能列表变长，按需挑。</li></ul>
+<p><strong>替代方案</strong>：不装，自己在 <code>AGENTS.md</code> 里写「回答控制在 5 行内，不复述需求」。</p>
+<hr>
+<h3 id="item-14">14. coreyhaines31/marketingskills —— 一套营销工种的技能包</h3>
+<p class="meta"><code>59,804 ★</code> · 最近提交 <code>2026-11-11</code> · MIT</p>
+<p><strong>大白话</strong>：53 个营销技能：文案、SEO、落地页转化率、A/B 测试、广告投放、邮件、冷启动、竞品分析、渠道归因、客户研究……基本上一个增长团队的活都覆盖了。</p>
+<p><strong>补了什么空白</strong>：mattpocock 完全没有商业侧。你要做产品页、写发布文案、看转化数据时，这套能直接上手。</p>
+<p><strong>装进 Kimi Code</strong>：按需复制，别全装。</p>
+<pre><code class="language-bash">git clone --depth 1 https://github.com/coreyhaines31/marketingskills.git /tmp/marketingskills
+cp -r /tmp/marketingskills/skills/copywriting \
+      /tmp/marketingskills/skills/cro \
+      /tmp/marketingskills/skills/ai-seo \
+      "D:/AppData/kimi-code/skills/"</code></pre>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>53 个技能全装会明显拖长技能列表，模型选择也会更犹豫；挑 3-5 个常用的就够。</li><li>内容和作者的课程、社群、服务有绑定，部分技能末尾会导流。</li><li>偏英文市场和海外渠道（Google、Meta、Stripe），国内平台适配要自己改。</li></ul>
+<p><strong>替代方案</strong>：没有同量级替代；不需要营销就别装。</p>
+<hr>
+<h3 id="item-15">15. 【破格】Paramchoudhary/ResumeSkills —— 简历与求职流水线</h3>
+<p class="meta"><code>3,138 ★</code> · 最近提交 <code>2026-06-19</code> · MIT</p>
+<p><strong>大白话</strong>：22 个求职技能：按 ATS 关键词优化简历、重写 bullet、生成 cover letter、写 cold email、模拟面试、填申请表、做学术 CV、转行翻译经历。从投递到面试基本都覆盖。</p>
+<p><strong>补了什么空白</strong>：mattpocock 不管求职。这是纯生活/职业场景，和项目无关。</p>
+<p><strong>装进 Kimi Code</strong>：按需复制。</p>
+<pre><code class="language-bash">git clone --depth 1 https://github.com/Paramchoudhary/ResumeSkills.git /tmp/resumeskills
+cp -r /tmp/resumeskills/skills/resume-ats-optimizer \
+      /tmp/resumeskills/skills/resume-bullet-writer \
+      "D:/AppData/kimi-code/skills/"</code></pre>
+<p><strong>坑与依赖</strong>：</p>
+<ul><li>星标 3.1k，低于门槛，<strong>破格收录</strong>；2026-06 之后没更新。</li><li>面向英文简历和 ATS 系统，中文简历、国内招聘平台（BOSS、猎聘）规则不同，要自己改。</li><li>求职类技能是一次性用品，用完可以删，不必长期留着。</li></ul>
+<p><strong>替代方案</strong>：没有同量级替代；不用求职就别装。</p>
+<hr>
+<h2 id="sec-5">四、已排除：这些和 mattpocock 功能重叠</h2>
+<div class="table-wrap"><table><thead><tr><th style="text-align:left">仓库</th><th style="text-align:right">星标</th><th style="text-align:left">为什么不推</th></tr></thead><tbody><tr><td style="text-align:left"><code>obra/superpowers</code></td><td style="text-align:right">316,353</td><td style="text-align:left">最像也最重叠：brainstorming、planning、TDD、debug、review 全套都有，和 mattpocock 二选一即可</td></tr><tr><td style="text-align:left"><code>affaan-m/ECC</code></td><td style="text-align:right">301,444</td><td style="text-align:left">harness 优化、记忆、安全、研究，强绑定 Claude Code 生态，Kimi 适配不明</td></tr><tr><td style="text-align:left"><code>nextlevelbuilder/ui-ux-pro-max-skill</code></td><td style="text-align:right">148,261</td><td style="text-align:left">设计智能，和 taste-skill 功能撞车；选 taste 是因为它带浏览器自检</td></tr><tr><td style="text-align:left"><code>addyosmani/agent-skills</code></td><td style="text-align:right">116,041</td><td style="text-align:left">production-grade engineering skills，TDD、review、重构全都覆盖，重叠度高</td></tr><tr><td style="text-align:left"><code>OpenMontageInc/OpenMontage</code></td><td style="text-align:right">79,735</td><td style="text-align:left">agentic 视频生产，12 条流水线、100+ 工具，依赖重，先不收</td></tr><tr><td style="text-align:left"><code>ComposioHQ/awesome-claude-skills</code></td><td style="text-align:right">79,292</td><td style="text-align:left">清单仓库，不是 skill 包，装不了</td></tr><tr><td style="text-align:left"><code>cloudflare/security-audit-skill</code></td><td style="text-align:right">70,454</td><td style="text-align:left">安全审计，场景垂直；你没有安全审计需求就别装</td></tr><tr><td style="text-align:left"><code>hesreallyhim/awesome-claude-code</code></td><td style="text-align:right">57,798</td><td style="text-align:left">资源导航清单，同上</td></tr><tr><td style="text-align:left"><code>sickn33/agentic-awesome-skills</code></td><td style="text-align:right">49,565</td><td style="text-align:left">2,955 个技能大杂烩，质量参差，筛选成本高于收益</td></tr><tr><td style="text-align:left"><code>anthropics/claude-plugins-official</code></td><td style="text-align:right">46,933</td><td style="text-align:left">官方插件市场目录，Kimi Code 不能直接装</td></tr><tr><td style="text-align:left"><code>wshobson/agents</code></td><td style="text-align:right">42,426</td><td style="text-align:left">agent / skill / command 大合集，和现有安装大量重复</td></tr><tr><td style="text-align:left"><code>VoltAgent/awesome-agent-skills</code></td><td style="text-align:right">37,102</td><td style="text-align:left">清单仓库</td></tr><tr><td style="text-align:left"><code>mukul975/Anthropic-Cybersecurity-Skills</code></td><td style="text-align:right">35,940</td><td style="text-align:left">817 个安全技能，同上</td></tr><tr><td style="text-align:left"><code>vercel-labs/agent-skills</code></td><td style="text-align:right">33,918</td><td style="text-align:left">前端与部署技能，和 taste-skill 部分重叠，且偏 Vercel 生态</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-6">五、如果只装三个</h2>
+<p>按「装了马上用得上」排序：</p>
+<ol><li><strong>anthropics/skills 的 docx + xlsx + pptx + pdf</strong> —— 你手上全是导出表、报表、文档，这是最高频的缺口</li><li><strong>i-have-adhd</strong> —— 零依赖、原生支持 Kimi，直接改善每天看回答的体验</li><li><strong>huashu-excel 或 graphify</strong> —— 前者贴合你现在的 SQL/对账工作，后者适合长期知识积累</li></ol>
+<p>装完先各跑一次 <code>/skill:&lt;name&gt;</code>，确认出现在列表里、能读到脚本目录，再决定要不要长期留。</p>
+<hr>
+<h2 id="sec-7">六、核对方法与免责声明</h2>
+<ul><li>星标、最近提交时间：2026-11-12 从 GitHub 仓库页读取，会随时间变化。</li><li>安装路径与技能规则：来自 Kimi Code 官方文档（Agent Skills 一节）和 <code>vercel-labs/skills</code> 的 agent 路径表。</li><li>每个仓库都读了 README 和目录结构，确认了 <code>SKILL.md</code> 位置、安装方式和声明的依赖。</li><li><strong>没有实际安装运行任何一个技能</strong>，所以「装完一定能跑」这句话不成立；尤其是需要 LibreOffice、Node 22、Python 3.12 的那几个，第一次跑大概率要补依赖。</li><li>三个破格项（<code>huashu-excel</code> 462 星、<code>karpathy-llm-wiki</code> 2.7k 星、<code>ResumeSkills</code> 3.1k 星）低于 5k 门槛，已单独标注，装之前请自行判断维护风险。</li></ul>
+<footer>由 agent-skills-推荐清单.md 生成 · 核对日期 2026-11-12 · 未实际安装验证</footer>
+</main>
+</div>
+<script>
+(function () {
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = localStorage.getItem('doc-theme'); } catch (e) {}
+  if (saved) root.dataset.theme = saved;
+  var btn = document.getElementById('themeBtn');
+  btn.addEventListener('click', function () {
+    var isDark = root.dataset.theme
+      ? root.dataset.theme === 'dark'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next = isDark ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('doc-theme', next); } catch (e) {}
+  });
+
+  var links = {};
+  document.querySelectorAll('.toc a').forEach(function (a) {
+    links[a.getAttribute('href').slice(1)] = a;
+  });
+  var heads = Array.prototype.slice.call(document.querySelectorAll('main h2, main h3'));
+  function onScroll() {
+    var current = heads[0];
+    for (var i = 0; i < heads.length; i++) {
+      if (heads[i].getBoundingClientRect().top <= 160) current = heads[i];
+      else break;
+    }
+    Object.keys(links).forEach(function (id) { links[id].classList.remove('active'); });
+    if (current && links[current.id]) links[current.id].classList.add('active');
+  }
+  document.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>
