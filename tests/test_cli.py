@@ -358,6 +358,7 @@ class TocAndAnchorTest(unittest.TestCase):
             html = (Path(tmp) / "short.html").read_text(encoding="utf-8")
             self.assertNotIn('<nav class="toc"', html)
             self.assertIn('class="shell no-toc"', html)
+            self.assertIn("<body>", html)
             self.assertIn("一段正文。", html)
 
 
@@ -389,6 +390,14 @@ class TocToggleTest(unittest.TestCase):
             self.assertIn("正文。", html)
             self.assertIn('<h2 id="sec-1">章节</h2>', html)
             self.assertIn('<h3 id="item-1">小节</h3>', html)
+
+    def test_narrow_screen_has_drawer_controls(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.convert(tmp)
+
+            self.assertIn('<body class="has-toc">', html)
+            self.assertIn('id="tocHandle"', html)
+            self.assertIn('id="tocBackdrop"', html)
 
 
 class CodeHighlightTest(unittest.TestCase):

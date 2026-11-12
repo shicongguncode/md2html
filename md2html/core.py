@@ -273,6 +273,7 @@ def convert(
         heading=heading,
         kicker=html.escape(stem),
         toc=toc_html,
+        body_attr=' class="has-toc"' if toc_html else "",
         shell_class="" if toc_html else " no-toc",
         content=content,
         footer=html.escape(f"由 {source_name} 生成 · 生成日期 {generated_on}"),

@@ -401,6 +401,8 @@ footer {
   font-size: 12.5px;
 }
 
+.toc-handle, .toc-backdrop { display: none; }
+
 @media (max-width: 1080px) {
   .shell { gap: 24px; padding: 28px 16px 60px; }
   .toc { flex: 0 0 200px; }
@@ -408,7 +410,57 @@ footer {
 }
 
 @media (max-width: 760px) {
-  .toc { display: none; }
+  body.has-toc .toc-handle {
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 32;
+    padding: 12px 7px;
+    writing-mode: vertical-rl;
+    letter-spacing: .12em;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-left: 0;
+    border-radius: 0 10px 10px 0;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+  }
+  body.has-toc .toc-handle:hover { color: var(--accent); }
+
+  .toc {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    max-height: none;
+    width: min(280px, 82vw);
+    padding: 22px 16px;
+    border-radius: 0 14px 14px 0;
+    transform: translateX(-100%);
+    transition: transform .22s ease;
+    z-index: 31;
+  }
+  body.toc-open .toc { transform: translateX(0); }
+  body.toc-open .toc-handle { opacity: 0; pointer-events: none; }
+
+  .toc-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: rgba(20, 19, 18, .42);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .22s ease;
+  }
+  body.toc-open .toc-backdrop { opacity: 1; pointer-events: auto; }
+  body.toc-open { overflow: hidden; }
+
   .shell { display: block; }
   main { margin: 0 auto; }
 }
@@ -425,7 +477,7 @@ footer {
 
 @media print {
   body { background: #fff; }
-  .toc, .theme-btn { display: none; }
+  .toc, .theme-btn, .toc-handle, .toc-backdrop { display: none; }
   main { border: 0; box-shadow: none; padding: 0; max-width: 100%; }
   pre, .table-wrap { break-inside: avoid; }
   h2, h3 { break-after: avoid; }
@@ -433,8 +485,10 @@ footer {
 </style>
 $head_extra
 </head>
-<body>
+<body$body_attr>
 <button class="theme-btn" id="themeBtn" aria-label="切换深浅色">◐</button>
+<button class="toc-handle" id="tocHandle" aria-label="打开目录" aria-expanded="false">目录</button>
+<div class="toc-backdrop" id="tocBackdrop"></div>
 <div class="shell$shell_class">
 $toc
 <main>
@@ -485,6 +539,60 @@ $content
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
   update();
+})();
+(function () {
+  var toc = document.querySelector('.toc');
+  var handle = document.getElementById('tocHandle');
+  var backdrop = document.getElementById('tocBackdrop');
+  if (!toc || !handle || !backdrop) return;
+  var mq = window.matchMedia('(max-width: 760px)');
+
+  function isOpen() { return document.body.classList.contains('toc-open'); }
+  function setOpen(open) {
+    document.body.classList.toggle('toc-open', open);
+    handle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  handle.addEventListener('click', function () { setOpen(!isOpen()); });
+  backdrop.addEventListener('click', function () { setOpen(false); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setOpen(false);
+  });
+  toc.addEventListener('click', function (e) {
+    if (e.target.closest('a')) setOpen(false);
+  });
+
+  var edgeStart = null;
+  document.addEventListener('pointerdown', function (e) {
+    if (!mq.matches || isOpen() || e.clientX > 18) return;
+    edgeStart = { x: e.clientX, y: e.clientY };
+  });
+  document.addEventListener('pointermove', function (e) {
+    if (!edgeStart) return;
+    if (e.clientX - edgeStart.x > 48 && Math.abs(e.clientY - edgeStart.y) < 80) {
+      edgeStart = null;
+      setOpen(true);
+    }
+  });
+  document.addEventListener('pointerup', function () { edgeStart = null; });
+  document.addEventListener('pointercancel', function () { edgeStart = null; });
+
+  var drawerStart = null;
+  toc.addEventListener('pointerdown', function (e) {
+    if (isOpen()) drawerStart = { x: e.clientX, y: e.clientY };
+  });
+  toc.addEventListener('pointermove', function (e) {
+    if (!drawerStart) return;
+    if (drawerStart.x - e.clientX > 48 && Math.abs(e.clientY - drawerStart.y) < 80) {
+      drawerStart = null;
+      setOpen(false);
+    }
+  });
+  toc.addEventListener('pointerup', function () { drawerStart = null; });
+
+  if (mq.addEventListener) {
+    mq.addEventListener('change', function (e) { if (!e.matches) setOpen(false); });
+  }
 })();
 </script>
 $body_extra
