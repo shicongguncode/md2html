@@ -53,7 +53,61 @@ def _first_h1_index(tokens) -> int | None:
     return None
 
 
-def convert(text: str, *, source_name: str, today: date | None = None) -> str:
+_TOC_LEVELS = {"h2": (2, "sec"), "h3": (3, "item")}
+
+
+def _assign_anchors(tokens) -> list[tuple[int, str, str]]:
+    entries = []
+    counters = {2: 0, 3: 0}
+    for index, token in enumerate(tokens):
+        if token.type != "heading_open":
+            continue
+        spec = _TOC_LEVELS.get(token.tag)
+        if spec is None:
+            continue
+        level, prefix = spec
+        counters[level] += 1
+        anchor = f"{prefix}-{counters[level]}"
+        token.attrSet("id", anchor)
+        entries.append((level, anchor, _plain_text(tokens[index + 1])))
+    return entries
+
+
+def _render_toc(entries) -> str:
+    if not entries:
+        return ""
+    nodes = []
+    for level, anchor, title in entries:
+        if level == 3 and nodes and nodes[-1]["level"] == 2:
+            nodes[-1]["children"].append((anchor, title))
+        else:
+            nodes.append(
+                {"level": level, "anchor": anchor, "title": title, "children": []}
+            )
+    lines = [
+        '<nav class="toc" aria-label="目录">',
+        '<div class="toc-title">目录</div>',
+        "<ul>",
+    ]
+    for node in nodes:
+        link = f'<a href="#{node["anchor"]}">{html.escape(node["title"])}</a>'
+        if not node["children"]:
+            lines.append(f"<li>{link}</li>")
+            continue
+        lines.append(f"<li>{link}")
+        lines.append("<ul>")
+        lines.extend(
+            f'<li><a href="#{child_anchor}">{html.escape(child_title)}</a></li>'
+            for child_anchor, child_title in node["children"]
+        )
+        lines.extend(["</ul>", "</li>"])
+    lines.extend(["</ul>", "</nav>"])
+    return "\n".join(lines)
+
+
+def convert(
+    text: str, *, source_name: str, today: date | None = None, toc: bool = True
+) -> str:
     stem = Path(source_name).stem
     parser = _parser()
     tokens = parser.parse(text)
@@ -67,14 +121,16 @@ def convert(text: str, *, source_name: str, today: date | None = None) -> str:
             del tokens[0:3]
             heading = f"<h1>{html.escape(title)}</h1>"
 
+    entries = _assign_anchors(tokens)
+    toc_html = _render_toc(entries) if toc else ""
     content = parser.renderer.render(tokens, parser.options, {})
     generated_on = (today or date.today()).isoformat()
     return _template().substitute(
         title=html.escape(title),
         heading=heading,
         kicker=html.escape(stem),
-        toc="",
-        shell_class="no-toc",
+        toc=toc_html,
+        shell_class="" if toc_html else " no-toc",
         content=content,
         footer=html.escape(f"由 {source_name} 生成 · 生成日期 {generated_on}"),
         head_extra="",

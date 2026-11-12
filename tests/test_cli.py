@@ -228,5 +228,111 @@ class ErrorHandlingTest(unittest.TestCase):
             self.assertFalse((Path(tmp) / "不存在.html").exists())
 
 
+class TocAndAnchorTest(unittest.TestCase):
+    markdown = """\
+# 总标题
+
+## 第一节
+
+### 子节一
+
+### 子节二
+
+## 第二节
+
+### 子节三
+
+#### 四级标题
+
+二级段落。
+"""
+
+    def convert(self, tmp, *args):
+        source = Path(tmp) / "guide.md"
+        source.write_text(self.markdown, encoding="utf-8")
+        result = run_cli(source, *args)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return (Path(tmp) / "guide.html").read_text(encoding="utf-8")
+
+    def test_headings_get_sequential_anchors_per_level(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.convert(tmp)
+
+            self.assertIn('<h2 id="sec-1">第一节</h2>', html)
+            self.assertIn('<h2 id="sec-2">第二节</h2>', html)
+            self.assertIn('<h3 id="item-1">子节一</h3>', html)
+            self.assertIn('<h3 id="item-2">子节二</h3>', html)
+            self.assertIn('<h3 id="item-3">子节三</h3>', html)
+            self.assertIn("<h4>四级标题</h4>", html)
+
+    def test_toc_lists_only_h2_and_h3_in_nested_order(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.convert(tmp)
+
+            self.assertRegex(html, r'<nav class="toc"')
+            match = re.search(r'<nav class="toc".*?</nav>', html, re.DOTALL)
+            self.assertIsNotNone(match)
+            nav = match.group(0)
+            self.assertNotIn("总标题", nav)
+            self.assertNotIn("四级标题", nav)
+            for anchor, title in (
+                ("sec-1", "第一节"),
+                ("sec-2", "第二节"),
+                ("item-1", "子节一"),
+                ("item-2", "子节二"),
+                ("item-3", "子节三"),
+            ):
+                self.assertIn(f'<a href="#{anchor}">{title}</a>', nav)
+            positions = [
+                nav.index(f'href="#{anchor}"')
+                for anchor in ("sec-1", "item-1", "item-2", "sec-2", "item-3")
+            ]
+            self.assertEqual(positions, sorted(positions))
+            self.assertIn('<li><a href="#sec-1">第一节</a>\n<ul>', nav)
+
+    def test_document_without_h2_or_h3_has_no_toc(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "short.md"
+            source.write_text("# 只有标题\n\n一段正文。\n", encoding="utf-8")
+
+            result = run_cli(source)
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            html = (Path(tmp) / "short.html").read_text(encoding="utf-8")
+            self.assertNotIn('<nav class="toc"', html)
+            self.assertIn('class="shell no-toc"', html)
+            self.assertIn("一段正文。", html)
+
+
+class TocToggleTest(unittest.TestCase):
+    markdown = "# 标题\n\n## 章节\n\n### 小节\n\n正文。\n"
+
+    def convert(self, tmp, *args):
+        source = Path(tmp) / "toggle.md"
+        source.write_text(self.markdown, encoding="utf-8")
+        result = run_cli(source, *args)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return (Path(tmp) / "toggle.html").read_text(encoding="utf-8")
+
+    def test_default_layout_keeps_toc_column(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.convert(tmp)
+
+            self.assertIn('<nav class="toc"', html)
+            self.assertIn('class="shell"', html)
+            self.assertNotIn('class="shell no-toc"', html)
+            self.assertIn('<h2 id="sec-1">章节</h2>', html)
+
+    def test_no_toc_flag_removes_toc_and_centers_single_column(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.convert(tmp, "--no-toc")
+
+            self.assertNotIn('<nav class="toc"', html)
+            self.assertIn('class="shell no-toc"', html)
+            self.assertIn("正文。", html)
+            self.assertIn('<h2 id="sec-1">章节</h2>', html)
+            self.assertIn('<h3 id="item-1">小节</h3>', html)
+
+
 if __name__ == "__main__":
     unittest.main()

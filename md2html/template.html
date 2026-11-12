@@ -328,7 +328,7 @@ $head_extra
 </head>
 <body>
 <button class="theme-btn" id="themeBtn" aria-label="切换深浅色">◐</button>
-<div class="shell $shell_class">
+<div class="shell$shell_class">
 $toc
 <main>
 <header>
@@ -354,6 +354,30 @@ $content
     root.dataset.theme = next;
     try { localStorage.setItem('doc-theme', next); } catch (e) {}
   });
+})();
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+  if (!links.length) return;
+  var targets = links.map(function (link) {
+    return document.getElementById(link.getAttribute('href').slice(1));
+  });
+  var active = null;
+  function update() {
+    var probe = window.scrollY + 120;
+    var current = 0;
+    for (var i = 0; i < targets.length; i++) {
+      if (!targets[i]) continue;
+      if (targets[i].getBoundingClientRect().top + window.scrollY <= probe) current = i;
+      else break;
+    }
+    if (links[current] === active) return;
+    if (active) active.classList.remove('active');
+    active = links[current];
+    if (active) active.classList.add('active');
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
 })();
 </script>
 $body_extra
