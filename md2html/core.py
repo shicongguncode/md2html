@@ -6,6 +6,10 @@ from string import Template
 
 from markdown_it import MarkdownIt
 from mdit_py_plugins.tasklists import tasklists_plugin
+from pygments import highlight as pygments_highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import get_lexer_by_name
+from pygments.util import ClassNotFound
 
 _TEMPLATE_PATH = Path(__file__).with_name("template.html")
 
@@ -13,6 +17,38 @@ _TEMPLATE_PATH = Path(__file__).with_name("template.html")
 @lru_cache(maxsize=1)
 def _template() -> Template:
     return Template(_TEMPLATE_PATH.read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
+def _formatter() -> HtmlFormatter:
+    return HtmlFormatter(nowrap=True)
+
+
+@lru_cache(maxsize=None)
+def _lexer(language: str):
+    try:
+        return get_lexer_by_name(
+            language, stripnl=False, stripall=False, ensurenl=False
+        )
+    except ClassNotFound:
+        return None
+
+
+def _render_fence(tokens, idx, options, env):
+    token = tokens[idx]
+    info = (token.info or "").strip()
+    language = info.split(maxsplit=1)[0] if info else ""
+    lexer = _lexer(language) if language else None
+    if lexer is None:
+        attrs = ""
+        if language:
+            attrs = f' class="language-{html.escape(language, quote=True)}"'
+        return f"<pre><code{attrs}>{html.escape(token.content)}</code></pre>\n"
+    body = pygments_highlight(token.content, lexer, _formatter())
+    return (
+        f'<pre class="highlight"><code class="language-{html.escape(language, quote=True)}">'
+        f"{body}</code></pre>\n"
+    )
 
 
 @lru_cache(maxsize=1)
@@ -31,6 +67,7 @@ def _parser() -> MarkdownIt:
 
     md.renderer.rules["table_open"] = table_open
     md.renderer.rules["table_close"] = table_close
+    md.renderer.rules["fence"] = _render_fence
     return md
 
 
